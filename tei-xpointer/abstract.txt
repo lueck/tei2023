@@ -1,0 +1,20 @@
+The XPointer framework is one of those W3C notions that is dead
+today. Same with the TEI XPointer schemes. The cause of dead is
+manifold and ranges from a lack of implementations to weaknesses of
+the specification: It is unclear, what a processor is to do with the
+pointers, that actually only point to a portion of a resource. As a
+consequence, XPointers have never grown to a paradigmatic field of
+application, in which they could have proven their value. However,
+there is such a paradigmatic field of application for the TEI XPointer
+schemes: the Web-Annotations-like <annotation> element and its @target
+attribute. If this element is really meant to "represent[] an
+annotation following the Web Annotation Data Model", like the TEI
+reference states, then we need a referencing mechanism, that is
+compatible with the Web Annotation's selector mechanism, and that at a
+specification level.  The TEI XPointer schemes not only do satisfy
+this requirement, but are the only specified component of the TEI,
+that satisfies it. The paper first introduces a full
+implementation. It then showcases an application in an inquiry on
+intertextuality using the <annotation> element: The semantic deferrals
+in the textual tradition of the book of Ijob, originating from the
+translations of the Masoretic Text to Septuagint and Targum.
