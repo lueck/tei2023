@@ -1,0 +1,112 @@
+<?xml version="1.1" encoding="UTF-8"?>
+<?xml-model href="http://www.tei-c.org/release/xml/tei/custom/schema/relaxng/tei_jtei.rng" type="application/xml" schematypens="http://relaxng.org/ns/structure/1.0"?>
+<?xml-model href="http://www.tei-c.org/release/xml/tei/custom/schema/relaxng/tei_jtei.rng" type="application/xml"
+	schematypens="http://purl.oclc.org/dsdl/schematron"?>
+<TEI xmlns="http://www.tei-c.org/ns/1.0" rend="jTEI">
+  <teiHeader>
+      <fileDesc>
+         <titleStmt>
+            <title type="main">&lt;ܬܸ݂&gt; – Towards Bidirectional TEI</title>
+            <author>
+               <name>
+                  <forename><!-- this author's forename --></forename> 
+                  <surname><!-- this author's surname --></surname>
+               </name>
+               <affiliation><!-- a prose description of this author's affiliation, containing <roleName> and <orgName>--></affiliation>
+               <email><!-- this author's email address --></email>
+            </author>
+         </titleStmt>
+         <publicationStmt>
+            <publisher>TEI Consortium</publisher>
+            <date><!-- the publication year --></date>
+            <availability>
+               <licence target="https://creativecommons.org/licenses/by/4.0/">
+                  <p>For this publication a Creative Commons Attribution 4.0 International license has been granted by the author(s) who retain full copyright.</p>
+               </licence> 
+            </availability>
+         </publicationStmt>
+         <sourceDesc>
+            <p>No source, born digital.</p>
+         </sourceDesc>
+      </fileDesc>
+      <encodingDesc>
+         <projectDesc>
+            <p>OpenEdition Journals -centre for open electronic publishing- is the platform for journals in the
+          humanities and social sciences, open to quality periodicals looking to publish full-text
+          articles online.</p>
+         </projectDesc>
+      </encodingDesc>
+      <profileDesc>
+         <langUsage>
+            <language ident="en">en</language>
+         </langUsage>
+         <textClass>
+            <keywords xml:lang="en">
+          <!-- a list of keywords, each in its own <term> -->
+               <term/>
+            </keywords>
+         </textClass>
+      </profileDesc>
+      <revisionDesc>
+         <change><!-- Description of a change to the article; we recommend using @who and @when. --></change>
+      </revisionDesc>
+  </teiHeader>
+  <text>
+      <front>
+         <div type="abstract" xml:id="abstract"
+            ><p>Encoding right-to-left script in TEI-XML is a hassle unless one uses an editor that hides away
+               the tags. The problem arises from element names in Latin script interrupting the
+               right-to-left rendering of content on the editor screen, which is handled by the
+               Unicode Bidirectional Algorithm. However, hiding the tags is not the only solution.
+               With <gi>altIdent</gi>, TEI offers a means for declaring alternative names for
+               elements and attributes: names in another language and even in another script. Thus,
+               we can have valid right-to-left-only TEI documents in XML version 1.1, which are
+               readable and editable while tags are visible.</p>
+            <p>However, using <gi>altIdent</gi> quickly feels like introducing entropy to the
+               schema. Therefore, the paper suggests not to translate names, but to
+                  <hi>transliterate</hi> them. Compared to translation, transliteration is a
+               mechanical process which can be done by a machine without much coding effort. An
+               implementation is at hand in the Unicode ICU library,<note/> and there is even an
+               XPath binding for this library,<note/> so that transliteration is available in XSLT
+               and XQuery. Thus, generating a full ODD with Arabic, Syriac, or Hebrew, etc. element
+               and attribute aliases becomes quite simple and fast. The &amp;lt;ܬܸ݂&amp;gt; from the
+               title of this paper is a <gi>TEI</gi> tag transliterated to Syriac script.</p>
+            <p>Transforming a TEI document with alterative names to its equivalent with Latin script
+               names is always possible en route the mapping of identifiers and alternative
+               identifiers deposited in the ODD. Direct re-transliteration of alternative names is
+               only possible under certain preconditions. For example, transliterating <q>TEI</q> to
+               Arabic script and back to Latin script gives <gi>tii</gi>, since the transliterator
+               maps the inventory of latin vovels to a non-compatible inventory; furthermore Arabic
+               is a unicameral script, so that case information is lost. Syriac script is very good
+               suited for transliterating from Latin script and back to; and albeit it is a
+               unicameral script we can add escape sequences to the transliteration, so that a fully
+               invertable transliteration can be achieved without consulting the ODD.</p>
+            <p>The paper will first analyse the problem when bidirectional text is displayed on a
+               screen, and it will show how wellformed tags look like in RTL script. It will then
+               introduce transliteration of XML names in documents and ODDs. It will discuss
+               challenges regarding attributes in the XML namespace, especially
+               <att>xml:id</att>.</p></div>
+      </front>
+      <body>
+      <!-- text divisions, each with an @xml:id and <head> -->
+         <div xml:id="firstdiv">
+            <head/>
+            <p>
+               <ref type="bibl" target="#bloggs13">Bloggs 2013</ref> tells us...</p>
+         </div>
+         <div xml:id="seconddiv">
+            <head/>
+            <p/>
+         </div>
+      </body>
+    
+      <back>
+         <div type="bibliography">
+        <!-- the bibliography for the article, organized as a series of <bibl> elements inside <listBibl> -->
+            <listBibl>
+               <bibl xml:id="bloggs13"/>
+            </listBibl>
+         </div>
+      </back>
+  </text>
+</TEI>

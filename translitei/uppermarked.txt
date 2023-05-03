@@ -1,0 +1,10 @@
+\u005f \u005f > \u005f ;
+\u005f a > A ;
+\u005f b > B ;
+\u005f c > C ;
+\u005f d > D ;
+\u005f e > E ;
+\u005f f > F ;
+\u005f i > I ;
+\u005f u > U ;
+\u005f o > O ;
