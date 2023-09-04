@@ -1,0 +1,53 @@
+@font-face {
+  font-family: "Meta";
+  src: url("../fonts/MetaOffcPro-Norm.ttf");
+}
+.reveal * {font-family: Meta}
+code, code * {font-family: monospace !important}
+
+/* Disable reveal's annoying background and borders around images */
+
+.reveal section img {
+  background: none;
+  border: none;
+  box-shadow: none;
+}
+
+/* By default reveal slides are vertically centered */
+
+.slide.align-top {
+  top: 0 !important;
+}
+.slide.align-top > :first-child {
+  padding-top: .4em;
+}
+.slide.align-top h2,
+.slide.align-top h2 img {
+  margin-bottom: 0;
+}
+
+/* Various custom styles */
+
+.reveal h1 {
+    font-weight: normal;
+}
+
+code { /* inline code */
+  padding: .1em .3ex;
+  background: #333;
+  font-size: .9em;
+}
+
+pre code { /* code block */
+  border: thin solid grey;
+  margin: 0 .3ex;
+  padding: .3em 1ex !important;
+  font-size: 1em;
+}
+
+.text-left { text-align: left }
+
+.small    { font-size: .9em }
+.xsmall   { font-size: .85em }
+.xxsmall  { font-size: .8em }
+.xxxsmall  { font-size: .75em }
