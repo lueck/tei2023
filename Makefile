@@ -15,12 +15,12 @@ FONTS := $(patsubst %,$(PAGES_DIR)/%,$(shell find $(FONTS_DIR) -name "*.ttf"))
 LOCAL_PANDOC_ADDS ?= --slide-level=2 \
         --variable=theme:black \
         --variable=transition:none \
-        --css=stylesheets/style.css \
+        --css=../stylesheets/style.css \
         --template=templates/revealjs.html \
 
 .PHONY: all clean clean*
 
-all: $(PAGES_DIR)/standoff-tools/slides.html $(PAGES_DIR)/standoff-tools/slides2.html $(IMAGES)
+all: $(PAGES_DIR)/tei-xpointer/slides.html $(IMAGES) $(STYLESHEETS)
 
 poster: oxbytei/poster.pdf 
 
