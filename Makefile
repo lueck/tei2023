@@ -1,6 +1,6 @@
 PAGES_DIR ?= public
 STYLESHEETS_DIR ?= stylesheets
-IMAGES_DIR ?= .
+IMAGES_DIR ?= tei-xpointer
 FONTS_DIR ?= fonts
 
 SAXON_JAR := ~/.m2/repository/net/sf/saxon/Saxon-HE/10.6/Saxon-HE-10.6.jar

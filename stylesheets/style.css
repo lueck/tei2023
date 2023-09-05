@@ -51,3 +51,14 @@ pre code { /* code block */
 .xsmall   { font-size: .85em }
 .xxsmall  { font-size: .8em }
 .xxxsmall  { font-size: .75em }
+
+.attribution {
+    margin-top: 8ex;
+    font-size: .5em;
+    justify-content: left !important;
+    position: relative;
+    bottom: 0;
+    left: 0;
+}
+	  
+.subtitle { font-size: 1.4em }
