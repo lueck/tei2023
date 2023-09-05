@@ -1,0 +1,13 @@
+image:
+    name: harbor.uni-muenster.de/proxy-docker/pandoc/core
+    entrypoint: ["/bin/sh", "-c"]
+
+before_script:
+    - apk add make git
+
+pages:
+    script:
+        - make all
+    artifacts:
+        paths:
+            - public
