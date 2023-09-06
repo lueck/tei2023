@@ -1,6 +1,6 @@
 PAGES_DIR ?= public
 STYLESHEETS_DIR ?= stylesheets
-IMAGES_DIR ?= tei-xpointer
+IMAGES_DIR ?= tei-xpointer translitei
 FONTS_DIR ?= fonts
 
 SAXON_JAR := ~/.m2/repository/net/sf/saxon/Saxon-HE/10.6/Saxon-HE-10.6.jar
@@ -8,7 +8,8 @@ XSLT_CMD := java -cp $(SAXON_JAR) net.sf.saxon.Transform
 
 HTML_SLIDES := $(patsubst %.md,$(PAGES_DIR)/%.html,$(filter-out README.md, $(wildcard *.md)))
 STYLESHEETS := $(patsubst %,$(PAGES_DIR)/%,$(shell find $(STYLESHEETS_DIR) -name "*.css"))
-IMAGES := $(patsubst %,$(PAGES_DIR)/%,$(shell find $(IMAGES_DIR) -regex ".*\.\(jpg\|png\)"))
+IMAGES := $(patsubst %,$(PAGES_DIR)/%,$(shell find $(IMAGES_DIR) -regex ".*\.\(jpg\|png\|gif\)"))
+IMAGES2 := $(patsubst %,$(PAGES_DIR)/%,$(shell find $(IMAGES2_DIR) -regex ".*\.\(jpg\|png\|gif\)"))
 FONTS := $(patsubst %,$(PAGES_DIR)/%,$(shell find $(FONTS_DIR) -name "*.ttf"))
 
 #  -V revealjs-url="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/3.6.0"
@@ -20,7 +21,7 @@ LOCAL_PANDOC_ADDS ?= --slide-level=2 \
 
 .PHONY: all clean clean*
 
-all: $(PAGES_DIR)/tei-xpointer/slides.html $(IMAGES) $(STYLESHEETS)
+all: $(PAGES_DIR)/tei-xpointer/slides.html $(PAGES_DIR)/translitei/slides.html $(IMAGES) $(STYLESHEETS)
 
 poster: oxbytei/poster.pdf 
 
@@ -46,6 +47,10 @@ $(PAGES_DIR)/%.jpg: %.jpg
 	cp $< $@
 
 $(PAGES_DIR)/%.png: %.png
+	mkdir -p $$(dirname $@)
+	cp $< $@
+
+$(PAGES_DIR)/%.gif: %.gif
 	mkdir -p $$(dirname $@)
 	cp $< $@
 
