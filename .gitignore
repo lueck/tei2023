@@ -1,4 +1,8 @@
 *~
 
 *.odt
-.~lock.*.odt#
+.~lock.*.odt#public
+
+public
+
+fonts
