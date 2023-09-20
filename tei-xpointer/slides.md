@@ -19,7 +19,7 @@ Christian Lück, University of Münster
 
 :::
 
-## Table of Contents { .align-top .xxsmall }
+## In this presentation { .align-top .xxsmall }
 
 1. TEI XPointer Schemes
 
@@ -109,8 +109,9 @@ XPointers just point. However, you may want to dereference a pointer and get
 
 - a node
 - a sequence of nodes
-- a sequence of strings
 - a sequence of mixed items or XDM values
+- just check them for syntactical correctness
+- convert them
 
 Let's have an API!
 
@@ -245,7 +246,7 @@ _annot1body rdf:value "<note>My comment.</note>" .
 
 Ijob 12.5: *Torch* is translated to *appointment*/*point in time*.
 
-![](transformed.png){ width="80%" .align-top .xxsmall}
+![](transformed.png){ width="100%" .align-top .xxsmall}
 
 :::
 
@@ -524,3 +525,7 @@ java -DallowedPath=/home/me/projects -cp saxon.jar:harden.jar:other.jar \
 
 
 # Thanks!
+
+[https://github.com/scdh/tei-xpointer-schemes](https://github.com/scdh/tei-xpointer-schemes)
+
+[https://github.com/lueck/tei2023](https://github.com/lueck/tei2023)
